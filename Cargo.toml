@@ -1,0 +1,41 @@
+[package]
+name = "solenv"
+version = "0.1.0"
+edition = "2021"
+description = "A project-local Solana development environment manager (Python venv for the Solana toolchain)"
+license = "Apache-2.0"
+repository = "https://github.com/AkashJana18/solenv"
+readme = "README.md"
+keywords = ["solana", "anchor", "agave", "toolchain", "dev-environment"]
+categories = ["command-line-utilities", "development-tools"]
+default-run = "solenv"
+
+[[bin]]
+name = "solenv"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive", "env", "wrap_help"] }
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "blocking", "json"] }
+sha2 = "0.10"
+dirs = "5"
+which = "6"
+anyhow = "1"
+semver = "1"
+once_cell = "1"
+tar = "0.4"
+flate2 = "1"
+xz2 = "0.1"
+bzip2 = "0.4"
+libc = "0.2"
+
+[dev-dependencies]
+tempfile = "3"
+assert_cmd = "2"
+predicates = "3"
+
+[profile.release]
+lto = "thin"
+strip = true

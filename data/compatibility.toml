@@ -1,0 +1,217 @@
+# solenv compatibility dataset
+#
+# This file is an extracted, machine-readable subset of the Solana Foundation
+# version compatibility matrix:
+#
+#   https://github.com/solana-foundation/solana-dev-skill/blob/main/skills/solana-dev/references/compatibility-matrix.md
+#
+# Everything here is sourced from that document, plus the official Anchor
+# docs (Anchor.toml toolchain) and the Anchor AVM / Agave release pages.
+# Keep this in sync with upstream as the matrix evolves.
+#
+# Each "rule" records which line of reasoning produced it so the dataset is
+# auditable. When in doubt, prefer the "Known Working Combinations" section
+# of the matrix, which is CI-tested.
+
+# ---------------------------------------------------------------------------
+# 1. Anchor -> Solana CLI pairing
+#    Source: "Master Compatibility Table" + "Solana CLI Version Mapping" +
+#            "Known Working Combinations (Tested)".
+#    Note: rules are matched first-match-wins; the catch-all `*` row must stay
+#    LAST so specific rows take precedence.
+# ---------------------------------------------------------------------------
+[[anchor_solana]]
+anchor = "1.1.x"
+min_solana = "3.1.0"
+note = "CI-tested pairing is 3.1.10; Solana 3.x line"
+
+[[anchor_solana]]
+anchor = "1.0.x"
+min_solana = "3.0.0"
+note = "Solana 3.x line documented for v1"
+
+[[anchor_solana]]
+anchor = "0.32.x"
+min_solana = "2.1.7"
+note = "Recommended Solana CLI 2.1.7+"
+
+[[anchor_solana]]
+anchor = "0.31.x"
+min_solana = "2.0.0"
+max_solana = "2.1.x"
+note = "Solana v2 crate ecosystem, 2.0.x-2.1.x"
+
+[[anchor_solana]]
+anchor = "0.30.x"
+min_solana = "1.18.0"
+max_solana = "1.18.x"
+note = "Last version using Solana v1 crates; rec 1.18.8"
+
+[[anchor_solana]]
+anchor = "0.29.x"
+min_solana = "1.16.0"
+max_solana = "1.17.x"
+note = "Solana 1.16.x-1.17.x"
+
+[[anchor_solana]]
+anchor = "*"                                   # no constraint
+min_solana = "0.0.0"
+note = "No data"
+
+# ---------------------------------------------------------------------------
+# 2. Anchor -> Rust MSRV / range
+#    Source: "Master Compatibility Table" Rust column + "Known Working
+#            Combinations".
+# ---------------------------------------------------------------------------
+[[anchor_rust]]
+anchor = "1.1.x"
+min_rust = "1.89.0"
+note = "anchor-lang MSRV 1.89; use any newer stable"
+
+[[anchor_rust]]
+anchor = "1.0.x"
+min_rust = "1.79.0"
+max_rust = "1.85.0"
+note = "1.79-1.85+ documented"
+
+[[anchor_rust]]
+anchor = "0.32.x"
+min_rust = "1.79.0"
+note = "1.79-1.85+; recommended 1.84.0+"
+
+[[anchor_rust]]
+anchor = "0.31.x"
+min_rust = "1.79.0"
+max_rust = "1.83.0"
+note = "1.79-1.83"
+
+[[anchor_rust]]
+anchor = "0.30.x"
+min_rust = "1.75.0"
+max_rust = "1.79.0"
+note = "1.75-1.79"
+
+[[anchor_rust]]
+anchor = "0.29.x"
+min_rust = "1.68.0"
+max_rust = "1.75.0"
+note = "1.68-1.75"
+
+# ---------------------------------------------------------------------------
+# 3. Anchor -> Node.js minimum
+#    Source: "Node.js / TypeScript Requirements" + "Master Compatibility
+#            Table" Node.js column.
+# ---------------------------------------------------------------------------
+[[anchor_node]]
+anchor = "1.1.x"
+min_node = "20.0.0"
+note = "engines.node >= 20.18; matrix says >=20.18, 22.x LTS recommended"
+
+[[anchor_node]]
+anchor = "1.0.x"
+min_node = "17.0.0"
+note = ">=17, 20.x LTS recommended"
+
+[[anchor_node]]
+anchor = "0.32.x"
+min_node = "17.0.0"
+note = ">=17, 20.x LTS recommended"
+
+[[anchor_node]]
+anchor = "0.31.x"
+min_node = "17.0.0"
+note = ">=17, 20.x LTS recommended"
+
+[[anchor_node]]
+anchor = "0.30.x"
+min_node = "16.0.0"
+note = ">=16"
+
+[[anchor_node]]
+anchor = "0.29.x"
+min_node = "16.0.0"
+note = ">=16"
+
+# ---------------------------------------------------------------------------
+# 4. Solana -> platform-tools mapping (informational + for build-sbf)
+#    Source: "Solana CLI Version Mapping" Platform Tools column.
+# ---------------------------------------------------------------------------
+[[solana_platform_tools]]
+solana = "4.1.x"
+platform_tools = "v1.52"
+note = "4.1.x uses v1.52+"
+
+[[solana_platform_tools]]
+solana = "4.0.x"
+platform_tools = "v1.52"
+note = "4.x SDK era; validator-only"
+
+[[solana_platform_tools]]
+solana = "3.1.x"
+platform_tools = "v1.52"
+note = "v1.52 (CI-tested for Anchor 1.1.x)"
+
+[[solana_platform_tools]]
+solana = "3.0.x"
+platform_tools = "v1.52"
+note = "v1.52"
+
+[[solana_platform_tools]]
+solana = "2.1.x"
+platform_tools = "v1.47"
+note = "v1.47-v1.51"
+
+[[solana_platform_tools]]
+solana = "2.0.x"
+platform_tools = "v1.44"
+note = "v1.44-v1.47"
+
+[[solana_platform_tools]]
+solana = "1.18.x"
+platform_tools = "v1.43"
+note = "v1.43"
+
+# ---------------------------------------------------------------------------
+# 5. Known fully-tested working combinations (CI / documented)
+#    Source: "Known Working Combinations (Tested)" section.
+#    These are the recommended defaults used by `solenv init`.
+# ---------------------------------------------------------------------------
+[[known_combination]]
+anchor = "1.1.x"
+solana = "3.1.x"
+rust = "1.89.0"
+platform_tools = "v1.52"
+node = "22.x"
+note = "Recommended for new projects (Jul 2026)"
+
+[[known_combination]]
+anchor = "1.0.x"
+solana = "3.0.x"
+rust = "1.79.0"
+platform_tools = "v1.52"
+node = "20.x"
+note = "Existing v1 projects"
+
+[[known_combination]]
+anchor = "0.32.x"
+solana = "2.1.x"
+rust = "1.84.0"
+platform_tools = "v1.52"
+node = "20.x"
+note = "Recommended for existing 0.32 projects staying pre-v1"
+
+[[known_combination]]
+anchor = "0.30.x"
+solana = "1.18.x"
+rust = "1.79.0"
+platform_tools = "v1.43"
+node = "18.x"
+note = "Legacy compatible (for older systems)"
+
+[[known_combination]]
+anchor = "0.31.x"
+solana = "2.0.x"
+rust = "1.79.0"
+platform_tools = "v1.47"
+node = "20.x"
+note = "Transitional (0.30 -> 0.31)"
