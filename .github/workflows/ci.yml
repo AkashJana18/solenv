@@ -42,7 +42,7 @@ jobs:
         run: cargo test
 
   release:
-    name: release build (${{ matrix.triple }})
+    name: release build (${{ matrix.runner }})
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
@@ -52,40 +52,50 @@ jobs:
       matrix:
         include:
           - runner: macos-14
-            triple: aarch64-apple-darwin
-          - runner: macos-13
-            triple: x86_64-apple-darwin
+            targets: aarch64-apple-darwin,x86_64-apple-darwin
           - runner: ubuntu-24.04
-            triple: x86_64-unknown-linux-gnu
+            targets: x86_64-unknown-linux-gnu
           - runner: ubuntu-24.04-arm
-            triple: aarch64-unknown-linux-gnu
+            targets: aarch64-unknown-linux-gnu
     runs-on: ${{ matrix.runner }}
     env:
       GH_TOKEN: ${{ github.token }}
-      TRIPLE: ${{ matrix.triple }}
+      TARGETS: ${{ matrix.targets }}
     steps:
       - uses: actions/checkout@v4
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.targets }}
       - name: Build release
-        run: cargo build --release
-      - name: Stage binary
         run: |
-          cp target/release/solenv "solenv-$TRIPLE"
-          chmod +x "solenv-$TRIPLE"
-          ls -l "solenv-$TRIPLE"
-      - name: Upload artifact
+          IFS=',' read -ra TS <<< "$TARGETS"
+          for t in "${TS[@]}"; do
+            echo "--- building $t ---"
+            cargo build --release --target "$t"
+          done
+      - name: Stage binaries
+        run: |
+          IFS=',' read -ra TS <<< "$TARGETS"
+          for t in "${TS[@]}"; do
+            cp "target/$t/release/solenv" "solenv-$t"
+            chmod +x "solenv-$t"
+          done
+          ls -l solenv-*
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: solenv-${{ matrix.triple }}
-          path: solenv-${{ matrix.triple }}
+          name: solenv-${{ runner.name }}
+          path: solenv-*
           if-no-files-found: error
       - name: Attach to GitHub Release
         run: |
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
             gh release create "$GITHUB_REF_NAME" --title "solenv $GITHUB_REF_NAME" --generate-notes --verify-tag >/dev/null 2>&1 || true
           for i in 1 2 3 4 5; do
-            gh release upload "$GITHUB_REF_NAME" "solenv-$TRIPLE" --clobber && exit 0
+            ok=1
+            for f in solenv-*; do gh release upload "$GITHUB_REF_NAME" "$f" --clobber || ok=0; done
+            [ $ok -eq 1 ] && exit 0
             sleep 3
           done
           exit 1
@@ -105,10 +115,11 @@ jobs:
         with:
           path: dist
           merge-multiple: true
+          pattern: solenv-*
       - name: Generate and upload SHA256SUMS
         run: |
           cd dist
-          sha256sum * > SHA256SUMS
+          sha256sum solenv-* > SHA256SUMS
           cat SHA256SUMS
           gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
             gh release create "$GITHUB_REF_NAME" --title "solenv $GITHUB_REF_NAME" --generate-notes --verify-tag >/dev/null 2>&1 || true
