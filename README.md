@@ -59,10 +59,11 @@ The installer downloads the matching `solenv-<triple>` release binary, verifies
 its SHA-256 against the release's `SHA256SUMS` (aborting on mismatch), installs it
 to `~/.local/bin`, and prints a PATH hint if needed.
 
-To pin a specific version instead of `latest`:
+To pin a specific version instead of `latest` (replace the tag with any released
+version, e.g. `v0.1.2`):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/AkashJana18/solenv/master/install.sh | SOLENV_VER=v0.1.2 bash
+curl -fsSL https://raw.githubusercontent.com/AkashJana18/solenv/master/install.sh | SOLENV_VER=vX.Y.Z bash
 ```
 
 Other installer knobs: `SOLENV_PREFIX` relocates the install directory, and
@@ -130,18 +131,18 @@ musl-based distros (e.g. Alpine).
 rust = "1.92.0"          # pinned via rustup (RUSTUP_TOOLCHAIN)
 solana = "3.1.10"        # solana-release-<triple>.tar.bz2 from agave releases
 anchor = "1.1.2"         # prebuilt anchor-<ver>-<triple> from solana-foundation/anchor
-node = "24"              # any version resolution is fine; use a major for "latest patch"
+node = "24.x"            # use "X.x" for the latest patch of a major (bare "24" = exactly 24.0.0)
 package_manager = "npm"  # npm | pnpm | yarn | bun | npx | corepack
 ```
 
 Version syntax supports exact (`1.92.0`), partial (major-only like `24`), and
 wildcard pins (`3.x`, `3.1.x`). Any non-exact pin is resolved to a concrete
-published version before install: major-only Node (`24`) resolves against the
-Node dist index, `3.0.x` style Solana/Anchor pins resolve against the latest
-published GitHub release tag matching the pattern, and Rust `1.91.x` resolves
-to the best matching installed rustup toolchain. `solenv check`, `install`,
-`run`, `list`, and `doctor` all use the same resolution, so a wildcard pin is
-reported and run as the exact version it resolves to.
+published version before install: Node major-only (`24`) resolves to `24.0.0`
+(exactly — use `24.x` for the latest 24 patch), `3.0.x` style Solana/Anchor pins
+resolve against the latest published GitHub release tag matching the pattern, and
+Rust `1.91.x` resolves to the best matching installed rustup toolchain. `solenv
+check`, `install`, `run`, `list`, and `doctor` all use the same resolution, so a
+wildcard pin is reported and run as the exact version it resolves to.
 
 ## Commands
 
