@@ -49,14 +49,33 @@ team shares one reproducible environment.
 > are used by downloaders. On Linux, a **glibc** distribution is required (Ubuntu,
 > Debian, Fedora); musl-based distros such as Alpine are **not** supported.
 
-Build from source:
+Install the latest prebuilt binary (macOS and glibc Linux, including WSL2):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/AkashJana18/solenv/master/install.sh | bash
+```
+
+The installer downloads the matching `solenv-<triple>` release binary, verifies
+its SHA-256 against the release's `SHA256SUMS` (aborting on mismatch), installs it
+to `~/.local/bin`, and prints a PATH hint if needed.
+
+To pin a specific version instead of `latest`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/AkashJana18/solenv/master/install.sh | SOLENV_VER=v0.1.2 bash
+```
+
+Other installer knobs: `SOLENV_PREFIX` relocates the install directory, and
+`SOLENV_BASE` overrides the download base URL.
+
+Build from source (alternative):
 
 ```sh
 cargo build --release
 # binary at target/release/solenv
 ```
 
-Or install via cargo:
+Or install into `~/.cargo/bin` from a checkout:
 
 ```sh
 cargo install --path .
@@ -91,8 +110,9 @@ release assets.
 
 To use it on WSL:
 
-- Install the **Linux** binary: grab it from the CI `release` artifacts on a
-  release tag (built on `ubuntu-latest`), or `cargo install --path .` inside WSL.
+- Install the **Linux** binary: run the one-liner from [Installation](#installation)
+  inside the WSL shell (it installs the `x86_64-unknown-linux-gnu` build), or grab
+  `solenv-x86_64-unknown-linux-gnu` directly from a release.
 - Run solenv from the **Linux shell** (not PowerShell, and not via `/mnt/c/...`
   paths). `foo.exe` native Windows builds are not provided.
 - Keep the project on the **native Linux filesystem** (`~/...`), not `/mnt/c` —
