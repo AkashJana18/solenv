@@ -1,6 +1,6 @@
 [package]
 name = "solenv"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 description = "A project-local Solana development environment manager (Python venv for the Solana toolchain)"
 license = "Apache-2.0"

@@ -42,7 +42,11 @@ VER="${SOLENV_VER:-latest}"
 if [ -n "${SOLENV_BASE:-}" ]; then
     BASE="$SOLENV_BASE"
 elif [ "$VER" = "latest" ]; then
-    BASE="https://github.com/$REPO/releases/latest/download"
+    echo "Resolving latest release tag ..."
+    VER="$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" | awk -F'"' '/"tag_name"/{print $4; exit}')"
+    [ -z "$VER" ] && die "could not resolve the latest release tag"
+    echo "  latest = $VER"
+    BASE="https://github.com/$REPO/releases/download/$VER"
 else
     BASE="https://github.com/$REPO/releases/download/$VER"
 fi
