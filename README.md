@@ -44,8 +44,10 @@ team shares one reproducible environment.
 
 ## Installation
 
-> **Requirements:** macOS or Linux, `bash`/`zsh`. `rustup` and `node` are used by
-> the `install`/`init` commands as bootstraps; `curl`/`tar` are used by downloaders.
+> **Requirements:** macOS or Linux (including **WSL2**), `bash`/`zsh`. `rustup`
+> and `node` are used by the `install`/`init` commands as bootstraps; `curl`/`tar`
+> are used by downloaders. On Linux, a **glibc** distribution is required (Ubuntu,
+> Debian, Fedora); musl-based distros such as Alpine are **not** supported.
 
 Build from source:
 
@@ -79,6 +81,27 @@ solenv run anchor build
 
 Existing `Anchor.toml` `[toolchain]` blocks are picked up by `init` so migration is
 drop-in.
+
+## WSL support
+
+solenv works on **WSL2** (Windows Subsystem for Linux). Inside WSL it runs as a
+normal Linux program; the host triple resolves to `x86_64-unknown-linux-gnu` (or
+`aarch64-unknown-linux-gnu` on ARM WSL), which matches the official Agave/Anchor
+release assets.
+
+To use it on WSL:
+
+- Install the **Linux** binary: grab it from the CI `release` artifacts on a
+  release tag (built on `ubuntu-latest`), or `cargo install --path .` inside WSL.
+- Run solenv from the **Linux shell** (not PowerShell, and not via `/mnt/c/...`
+  paths). `foo.exe` native Windows builds are not provided.
+- Keep the project on the **native Linux filesystem** (`~/...`), not `/mnt/c` —
+  `/mnt/c` is slow and has permission quirks for `.solenv`.
+- Use a **glibc** distro (Ubuntu is the WSL default).
+- `rustup`, `avm`, and `node` must be installed on PATH inside WSL.
+
+`solenv doctor` prints a hint when it detects WSL, and refuses to run on
+musl-based distros (e.g. Alpine).
 
 ## `solenv.toml`
 
@@ -163,8 +186,10 @@ compatible ranges when a pin falls outside them.
 
 ## Limitations / roadmap
 
-- macOS/Linux only for this MVP (no Windows).
-- `bash`/`zsh` shell environments (no PowerShell, limited fish/csh support).
+- Native Windows and musl-based Linux (e.g. Alpine) are not supported; use macOS,
+  a glibc Linux distro, or WSL2 (see [WSL support](#wsl-support)).
+- No shell profile shims yet — use `solenv run <cmd>` instead of auto-injecting
+  PATH into your shell.
 - The compatibility matrix is a best-effort encoding of upstream documents, not an
   official API; treat it as advisory and update `data/compatibility.toml` as the
   ecosystem moves.

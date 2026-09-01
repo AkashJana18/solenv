@@ -99,6 +99,18 @@ pub fn run(cli: &Cli) -> Result<()> {
     // 4. Corrupted cached downloads (incompletely written temp files).
     check_cache(&mut findings, &env);
 
+    // 5. Platform notes: WSL hint + musl rejection.
+    if let Some(hint) = crate::platform::wsl_hint() {
+        findings.push(Finding::ok(hint));
+    }
+    if std::env::consts::OS == "linux" && crate::platform::libc_flavor() == "musl" {
+        findings.push(Finding::err(
+            "musl-based Linux detected (e.g. Alpine)",
+            "solenv needs glibc Solana/Anchor binaries; musl distros are not supported.",
+            "use a glibc distribution (Ubuntu, Debian, Fedora) or Ubuntu/WSL2.",
+        ));
+    }
+
     if let Some(cfg) = &cfg {
         let tc = cfg.toolchain.clone().unwrap_or_default();
         let rust = RustManager::new();
